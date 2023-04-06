@@ -54,7 +54,7 @@ client.once(Events.ClientReady, c => {
 
 client.on(Events.InteractionCreate, async interaction => { //executing commands
 	if (interaction.isChatInputCommand()) { //If it's a slash command
-		const command = interaction.client.commands.get(interaction.commandName); //Basically grab the command
+		const command = await interaction.client.commands.get(interaction.commandName); //Basically grab the command
 		if (!command) return;
 		try {
 			await command.execute({ 

@@ -22,22 +22,24 @@ module.exports = {
 			.setRequired(true)),
 	async execute({ interaction, ChessEngine, functions }) {
 		await interaction.deferReply();
+
+		let players = JSON.parse(fs.readFileSync('./database/misc/players.json'));
 		let user = interaction.options.getUser('user');
 		let side = interaction.options.getString('side');
+
+		if (players[interaction.user.id]) return interaction.editReply('You\'ve a match already! Check it with /board');
+		if (players[user.id]) return interaction.editReply('You\'ve a match already! Check it with /board');
+
 		let matchID = Math.floor((Math.random() * 10000000) + 9000000).toString(36)
 		let isMatcherWhite = (side == 'r' ? (Math.round(Math.random()) == 1 ? true : false) : (side == 'w' ? true : false))
 		let game = new ChessEngine.Game()
-		//Randomizes the pieces so you have a board of 960 chess
-		let possibleWhitePlaces = [
-			'A4', 'B4', 'C4', 'D4', 'E4', 'F4', 'G4', 'H4',
-			'A3', 'B3', 'C3', 'D3', 'E3', 'F3', 'G3', 'H3',
-			'A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1'
-		]
-		let possibleBlackPlaces = [
-			'A5', 'B5', 'C5', 'D5', 'E5', 'F5', 'G5', 'H5',
-			'A6', 'B6', 'C6', 'D6', 'E6', 'F6', 'G6', 'H6',
-			'A8', 'B8', 'C8', 'D8', 'E8', 'F8', 'G8', 'H8'
-		]
+
+		let randPos = functions.randomizePositions()
+		for (let pos in randPos) {
+			randPos[pos]
+			game.setPiece(pos, randPos[pos])
+		}
+		// console.log(game.exportJson())
 		//rook
 		//bishop
 		//knight
@@ -46,8 +48,14 @@ module.exports = {
 			white: isMatcherWhite ? interaction.user.id : user.id,
 			black: isMatcherWhite ? user.id : interaction.user.id
 		}
+
+		players[interaction.user.id] = matchID;
+		players[user.id] = matchID;
+
 		fs.writeFileSync(`./database/misc/${matchID}.json`, JSON.stringify(newMatch, null, 2))
+		fs.writeFileSync(`./database/misc/players.json`, JSON.stringify(players, null, 2));
+
 		let board = await functions.drawBoard(game.exportJson())
-		return interaction.editReply({ content: 'Match created!', files: [new AttachmentBuilder(board)] })
+		return interaction.editReply({ content: `Match created! You're ${isMatcherWhite ? 'white' : 'black'}, <@${user.id}> is ${!isMatcherWhite ? 'white' : 'black'}!`, files: [new AttachmentBuilder(board)] })
 	},
 };
