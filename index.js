@@ -59,7 +59,7 @@ client.on(Events.InteractionCreate, async interaction => { //executing commands
 		try {
 			await command.execute({ 
 				interaction: interaction, 
-				client: client, 
+				// client: client, 
 				Canvas: Canvas,
 				ChessEngine: ChessEngine,
 				functions: functions

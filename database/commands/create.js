@@ -31,7 +31,7 @@ module.exports = {
 		if (players[user.id]) return interaction.editReply('You\'ve a match already! Check it with /board');
 
 		let matchID = Math.floor((Math.random() * 10000000) + 9000000).toString(36)
-		let isMatcherWhite = (side == 'r' ? (Math.round(Math.random()) == 1 ? true : false) : (side == 'w' ? true : false))
+		let isMatcherWhite = (side == 'r' ? (Math.round(Math.random() + 1) == 1 ? true : false) : (side == 'w' ? true : false))
 		let game = new ChessEngine.Game()
 
 		let randPos = functions.randomizePositions()
